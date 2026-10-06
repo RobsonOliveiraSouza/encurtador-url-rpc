@@ -23,7 +23,7 @@ class RequestHandler(SimpleXMLRPCRequestHandler):
 
         endereco_cliente = self.client_address[0]
 
-        # Caso exista informação de encaminhamento, utilizamos o primeiro endereço informado.
+        # caso exista informação de encaminhamento utilizamos o primeiro endereço informado
         forwarded_for = self.headers.get("X-Forwarded-For")
 
         if forwarded_for:
@@ -38,7 +38,7 @@ class RequestHandler(SimpleXMLRPCRequestHandler):
             contexto_requisicao.endereco_cliente = None
 
 
-# Round-Robin ponderado S1=1, S2=1, S3=2
+# round-robin ponderado S1=1, S2=1 e S3=2 seguindo a intrução da especificacão
 def selecionar_servidor():
 
     global indice_atual
@@ -49,8 +49,6 @@ def selecionar_servidor():
 
     return servidor
 
-
-# Encaminhamento
 def encaminhar(operacao, argumento):
 
     servidor_destino = selecionar_servidor()
@@ -83,7 +81,6 @@ def encaminhar(operacao, argumento):
             operacao
         )
 
-        # endereço transportado como metadado para que o servidor possa registrá-lo
         resposta = metodo_remoto(
             argumento,
             endereco_cliente
@@ -108,7 +105,6 @@ def encaminhar(operacao, argumento):
             "url_encurtada": ""
         }
 
-
 def encurtar(url):
     return encaminhar("encurtar", url)
 
@@ -117,7 +113,6 @@ def resolver(url):
     return encaminhar("resolver", url)
 
 
-# Inicialização do balanceador
 def iniciar_balanceador(porta):
 
     balanceador = SimpleXMLRPCServer(
@@ -146,8 +141,6 @@ def iniciar_balanceador(porta):
 
     balanceador.serve_forever()
 
-
-# Execução
 if __name__ == "__main__":
 
     if len(sys.argv) != 2:

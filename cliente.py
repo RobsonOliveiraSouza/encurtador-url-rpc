@@ -1,8 +1,6 @@
 from xmlrpc.client import ServerProxy, Fault, ProtocolError
 import sys
 
-
-# Operações do cliente
 def encurtar_url(balanceador):
     print("\n--- ENCURTAR URL ---")
 
@@ -40,8 +38,6 @@ def resolver_url(balanceador):
         print(f"URL encurtada: {resposta['url_encurtada']}")
         print(f"URL original : {resposta['url_original']}")
 
-
-# Interface
 def executar(endereco_balanceador):
 
     balanceador = ServerProxy(
@@ -81,7 +77,6 @@ def executar(endereco_balanceador):
             print(f"Detalhes: {erro}")
 
 
-# Execução
 if __name__ == "__main__":
 
     if len(sys.argv) != 2:

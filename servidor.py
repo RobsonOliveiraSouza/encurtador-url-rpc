@@ -8,7 +8,7 @@ ARQUIVO_BANCO = "dados.db"
 PREFIXO_URL = "sddin.uem/"
 
 
-# Config do banco
+# banco
 def conectar_banco():
     return sqlite3.connect(
         ARQUIVO_BANCO,
@@ -25,11 +25,9 @@ def inicializar_banco():
             )
         """)
 
-
-# Geração de código aleatório
 def gerar_codigo():
     """
-    Gera exatamente 8 caracteres, os primeiros 7 podem ser letras ou números mas o último deve ser um dígito.
+    Gera exatamente 8 caracteres sendo os 7 primeiros podendo ser letras ou números mas o último deve ser um dígito.
 
     """
     caracteres = string.ascii_letters + string.digits
@@ -44,8 +42,7 @@ def gerar_codigo():
     return primeiros_sete + ultimo
 
 
-# Operações RPC
-
+# operações rpc
 def encurtar(url, endereco_cliente="desconhecido"):
     print("=" * 50)
     print("[SERVIDOR] Requisição recebida")
@@ -55,7 +52,6 @@ def encurtar(url, endereco_cliente="desconhecido"):
 
     with conectar_banco() as conexao:
 
-        # Verifica se a URL já existe
         cursor = conexao.execute(
             "SELECT codigo FROM urls WHERE url_original = ?",
             (url,)
@@ -73,7 +69,6 @@ def encurtar(url, endereco_cliente="desconhecido"):
                 "url_encurtada": f"{PREFIXO_URL}{codigo}"
             }
 
-        # Tenta gerar um código ainda não utilizado
         while True:
 
             codigo = gerar_codigo()
@@ -92,7 +87,7 @@ def encurtar(url, endereco_cliente="desconhecido"):
 
             except sqlite3.IntegrityError:
 
-                # Pode ter ocorrido colisão do código, se outra instância cadastrou a mesma URL simultaneamente, recuperamos o cadastro.
+                # pode ter ocorrido colisão do código se outra instância cadastrou a mesma URL simultaneamente ent recuperamos o cadastro
                 cursor = conexao.execute(
                     "SELECT codigo FROM urls WHERE url_original = ?",
                     (url,)
@@ -104,7 +99,7 @@ def encurtar(url, endereco_cliente="desconhecido"):
                     codigo = resultado[0]
                     break
 
-                # Caso contrário, houve colisão do código aleatório e tentamos outro.
+                # caso contrário, houve colisão do código aleatório e tentamos outro
                 continue
 
     return {
@@ -157,7 +152,7 @@ def resolver(url, endereco_cliente="desconhecido"):
     }
 
 
-# Servidor RPC
+# rpc
 def iniciar_servidor(porta):
 
     inicializar_banco()
@@ -179,8 +174,6 @@ def iniciar_servidor(porta):
 
     servidor.serve_forever()
 
-
-# Execução
 if __name__ == "__main__":
 
     if len(sys.argv) != 2:
